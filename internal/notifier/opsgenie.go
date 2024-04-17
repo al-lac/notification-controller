@@ -38,6 +38,7 @@ type OpsgenieAlert struct {
 	Message     string            `json:"message"`
 	Description string            `json:"description"`
 	Details     map[string]string `json:"details"`
+	Severity    string            `json:"severity"`
 }
 
 func NewOpsgenie(hookURL string, proxyURL string, certPool *x509.CertPool, token string) (*Opsgenie, error) {
@@ -69,6 +70,7 @@ func (s *Opsgenie) Post(ctx context.Context, event eventv1.Event) error {
 		Message:     event.InvolvedObject.Kind + "/" + event.InvolvedObject.Name,
 		Description: event.Message,
 		Details:     event.Metadata,
+		Severity:    event.Severity,
 	}
 
 	err := postMessage(ctx, s.URL, s.ProxyURL, s.CertPool, payload, func(req *retryablehttp.Request) {
